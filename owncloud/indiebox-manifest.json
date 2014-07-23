@@ -1,0 +1,134 @@
+{
+    "type" : "app",
+
+    "info" : {
+        "package"         : "##pkgname##",
+        "name"            : "Owncloud",
+        "tagline"         : "##pkgdesc##",
+        "description"     : "##description##",
+
+        "developer"       : "##developer##",
+        "maintainer"      : "##maintainer##",
+
+        "upstreamversion" : "##pkgver##",
+        "packageversion"  : "##pkgver##-##pkgrel##",
+
+        "licenses" : [
+            "##license##"
+        ]
+    },
+
+    "roles" : {
+        "apache2" : {
+            "defaultcontext" : "/owncloud",
+            "depends" : [
+                "php",
+                "php-apache",
+                "php-gd",
+                "sudo"
+            ],
+            "apache2modules" : [
+                "php5",
+                "rewrite",
+                "headers",
+                "env",
+                "setenvif"
+            ],
+            "phpmodules" : [
+                "gd",
+                "iconv",
+                "mysql",
+                "mysqli",
+                "pdo_mysql",
+                "zip",
+                "openssl"
+            ],
+            "appconfigitems" : [
+                {
+                    "type" : "directorytree",
+                    "names" : [
+                        "3rdparty",
+                        "apps",
+                        "console.php",
+                        "core",
+                        "cron.php",
+                        "db_structure.xml",
+                        "index.html",
+                        "index.php",
+                        "l10n",
+                        "lib",
+                        "occ",
+                        "ocs",
+                        "public.php",
+                        "remote.php",
+                        "search",
+                        "settings",
+                        "status.php",
+                        "themes",
+                        "version.php"
+                    ],
+                    "source" : "owncloud/$1",
+                    "uname" : "root",
+                    "gname" : "root",
+                    "filepermissions" : "preserve",
+                    "dirpermissions"  : "preserve"
+                },
+                {
+                    "type"  : "directory",
+                    "name"  : "data",
+                    "retentionpolicy" : "keep",
+                    "retentionbucket" : "datadir",
+                    "permissions" : "0750",
+                    "uname"       : "${apache2.uname}",
+                    "gname"       : "${apache2.gname}"
+                },
+                {
+                    "type"  : "directory",
+                    "name"  : "config",
+                    "retentionpolicy" : "keep",
+                    "retentionbucket" : "configdir",
+                    "permissions" : "0750",
+                    "uname"       : "${apache2.uname}",
+                    "gname"       : "${apache2.gname}"
+                },
+                {
+                    "type"         : "file",
+                    "name"         : "${appconfig.apache2.appconfigfragmentfile}",
+                    "template"     : "tmpl/htaccess.tmpl",
+                    "templatelang" : "varsubst"
+                },
+                {
+                    "type"   : "perlscript",
+                    "source" : "bin/generate-autoconfig.pl"
+                },
+                {
+                    "type"   : "perlscript",
+                    "source" : "bin/fix-permissions.pl"
+                }
+            ],
+            "installers" : [
+                {
+                    "type"   : "perlscript",
+                    "source" : "bin/web-install.pl"
+                }
+            ],
+            "upgraders" : [
+                {
+                    "type"   : "perlscript",
+                    "source" : "bin/fix-restore.pl"
+                }
+            ]
+        },
+        "mysql" : {
+            "appconfigitems" : [
+                {
+                    "type"       : "mysql-database",
+                    "name"       : "maindb",
+                    "retentionpolicy"  : "keep",
+                    "retentionbucket"  : "maindb",
+                    "privileges" : "all privileges"
+                }
+            ]
+        }
+    }
+}

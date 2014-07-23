@@ -1,0 +1,6 @@
+owncloud-*.pkg.tar.xz
+owncloud-*.pkg.tar.xz.sig
+owncloud-*.tar.bz2
+*~
+pkg/
+src/
