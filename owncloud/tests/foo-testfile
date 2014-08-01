@@ -1,0 +1,45 @@
+== Info: Added owncloud-test:80:127.0.0.1 to DNS cache
+== Info: Added owncloud-test:443:127.0.0.1 to DNS cache
+== Info: Hostname was found in DNS cache
+== Info:   Trying 127.0.0.1...
+== Info: Connected to owncloud-test (127.0.0.1) port 80 (#0)
+=> Send header, 301 bytes (0x12d)
+0000: POST /owncloud/index.php/apps/files/ajax/upload.php HTTP/1.1
+003e: User-Agent: curl/7.35.0
+0057: Host: owncloud-test
+006c: Accept: */*
+0079: Cookie: oc0fc1f4c823=qbr3fncb88i80805pv7t9idcr5
+00aa: Content-Length: 147
+00bf: Expect: 100-continue
+00d5: Content-Type: multipart/form-data; boundary=--------------------
+0115: ----e30af808613e1081
+012b: 
+<= Recv header, 23 bytes (0x17)
+0000: HTTP/1.1 100 Continue
+=> Send data, 147 bytes (0x93)
+0000: --------------------------e30af808613e1081
+002c: Content-Disposition: form-data; name="file"
+0059: 
+005b: testfile
+0065: --------------------------e30af808613e1081--
+<= Recv header, 24 bytes (0x18)
+0000: HTTP/1.1 404 Not Found
+<= Recv header, 37 bytes (0x25)
+0000: Date: Thu, 27 Mar 2014 21:22:45 GMT
+== Info: Server Apache is not blacklisted
+<= Recv header, 16 bytes (0x10)
+0000: Server: Apache
+<= Recv header, 21 bytes (0x15)
+0000: Content-Length: 243
+<= Recv header, 45 bytes (0x2d)
+0000: Content-Type: text/html; charset=iso-8859-1
+== Info: HTTP error before end of send, stop sending
+<= Recv header, 2 bytes (0x2)
+0000: 
+<= Recv data, 243 bytes (0xf3)
+0000: <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">.<html><head>.
+0040: <title>404 Not Found</title>.</head><body>.<h1>Not Found</h1>.<p
+0080: >The requested URL /owncloud/index.php/apps/files/ajax/upload.ph
+00c0: p was not found on this server.</p>.</body></html>.
+== Info: Closing connection 0
+== Info: WARNING: failed to save cookies in /tmp/Fi1ch94GJz
