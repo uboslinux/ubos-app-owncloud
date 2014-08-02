@@ -25,16 +25,16 @@ package OwnCloud1Test;
 
 use IndieBox::WebAppTest;
 
-# The states and transitions for this test
+# Admin user for this test
+my $adminlogin = 'specialuser';
+my $adminpass  = 'specialpass';
 
-my $custPointValues = {
-        'adminlogin' => 'specialuser',
-        'adminpass'  => 'specialpass'
-};
 my $filesAppRelativeUrl = '/index.php/apps/files';
 my $testFile            = 'foo-testfile';
 
-## Factored out upload routines.
+## We need to test file uploading, and webapptest doesn't really have
+## any easy methods for that yet. So first, here is a utility routine
+## for uploading files. The actual test follows.
 
 ##
 # Perform an HTTP POST request uploading a file on the host on which the
@@ -45,14 +45,14 @@ my $testFile            = 'foo-testfile';
 # $dir: the directory parameter
 # $requestToken: the form's request token
 # return: hash containing content and headers of the HTTP response
-sub httpUploadRelativeHost {
+sub upload {
     my $c            = shift;
     my $relativeUrl  = shift;
     my $file         = shift;
     my $dir          = shift;
     my $requestToken = shift;
 
-    my $url = 'http://' . $c->hostName . $relativeUrl;
+    my $url = 'http://' . $c->hostName . $c->context() . $relativeUrl;
     my $response;
 
     debug( 'Posting to url', $url );
@@ -74,22 +74,6 @@ sub httpUploadRelativeHost {
              'file'        => $file };
 }
 
-##
-# Perform an HTTP POST request uploading a file on the application being tested,
-# appending to the context URL.
-# $c: TestContext
-# $relativeUrl: appended to the application's context URL
-# $file: name of the file to be uploaded
-# return: hash containing content and headers of the HTTP response
-sub httpUploadRelativeContext {
-    my $c            = shift;
-    my $relativeUrl  = shift;
-    my $file         = shift;
-    my $dir          = shift;
-    my $requestToken = shift;
-
-    return httpUploadRelativeHost( $c, $c->context() . $relativeUrl, $file, $dir, $requestToken );
-}
 
 ##
 
@@ -100,7 +84,7 @@ my $TEST = new IndieBox::WebAppTest(
     appToTest                => 'owncloud',
     testContext              => '/foobar',
     hostname                 => 'owncloud-test',
-    customizationPointValues => $custPointValues,
+    customizationPointValues => { 'adminlogin' => $adminlogin, 'adminpass' => $adminpass },
 
     checks => [
             new IndieBox::WebAppTest::StateCheck(
@@ -108,46 +92,25 @@ my $TEST = new IndieBox::WebAppTest(
                     check => sub {
                         my $c = shift;
 
-                        my $response = $c->httpGetRelativeContext( '/' );
-                        unless( $response->{headers} =~ m!HTTP/1.1 200 OK! ) {
-                            $c->reportError( 'Not HTTP Status 200', $response->{headers} );
-                        }
-                        unless( $response->{content} =~ m!<label for="user" class="infield">Username</label>! ) {
-                            $c->reportError( 'Wrong front page' );
-                        }
+                        $c->getMustContain( '/', '<label for="user" class="infield">Username</label>', 200, 'Wrong (before log-on) front page' );
 
                         my $postData = {
-                            'user'            => $custPointValues->{'adminlogin'},
-                            'password'        => $custPointValues->{'adminpass'},
+                            'user'            => $adminlogin,
+                            'password'        => $adminpass,
                             'timezone-offset' => 0
                         };
                         
-                        $response = $c->httpPostRelativeContext( '/', $postData );
-                        unless( $response->{headers} =~ m!HTTP/1.1 302 Found! ) {
-                            $c->reportError( 'Not HTTP Status 203', $response->{headers} );
-                        }
-                        unless( $response->{headers} =~ m!Location:.*$filesAppRelativeUrl! ) {
-                            $c->reportError( 'Not redirected to files app', $response->{headers} );
-                        }
-                            
+                        my $response = $c->post( '/', $postData );
+                        $c->mustRedirect( $response, $filesAppRelativeUrl, 302, 'Not redirected to files app' );
                         
-                        $response = $c->httpGetRelativeContext( $filesAppRelativeUrl );
-                        unless( $response->{headers} =~ m!HTTP/1.1 200 OK! ) {
-                            $c->reportError( 'Not HTTP Status 200', $response->{headers} );
-                        }
-                        if( $response->{content} =~ m!<label for="user" class="infield">Username</label>! ) {
-                            $c->reportError( 'Wrong logged-on page (still front page)' );
-                        }
-                        my $adminLogin = $custPointValues->{'adminlogin'};
-                        unless( $response->{content} =~ m!<span id="expandDisplayName">$adminLogin</span>! ) {
-                            $c->reportError( 'Wrong logged-on page (logged-in user not shown)' );
-                        }
+                        $c->getMustContain( $filesAppRelativeUrl, '<label for="user" class="infield">Username</label>', 200, 'Wrong (logged-on) front page (content)' );
+
+                        $c->getMustContain( $filesAppRelativeUrl, '<span id="expandDisplayName">' . $adminlogin . '</span>', 200, 'Wrong (logged-on) front page (user)' );
 
                         # uploaded file must not be there
-                        $response = $c->httpGetRelativeContext( $filesAppRelativeUrl . '/download/' . $testFile );
-                        if( $response->{headers} =~ m!HTTP/1.1 200 OK! ) {
-                            $c->reportError( 'Test file found but should not', $testFile, $response->{headers} );
-                        }
+                        $response = $c->get( $filesAppRelativeUrl . '/download/' . $testFile );
+                        $c->mustStatus( $response, 404, 'Test file found but should not' );
+
                         return 1;
                     }
             ),
@@ -158,20 +121,13 @@ my $TEST = new IndieBox::WebAppTest(
 
                         # need to login first, and find requesttoken
                         my $postData = {
-                            'user'            => $custPointValues->{'adminlogin'},
-                            'password'        => $custPointValues->{'adminpass'},
+                            'user'            => $adminlogin,
+                            'password'        => $adminpass,
                             'timezone-offset' => 0
                         };
+                        $c->post( '/', $postData ); # tested that earlier
                         
-                        my $response = $c->httpPostRelativeContext( '/', $postData );
-                        unless( $response->{headers} =~ m!HTTP/1.1 302 Found! ) {
-                            $c->reportError( 'Not HTTP Status 203', $response->{headers} );
-                        }
-
-                        $response = $c->httpGetRelativeContext( $filesAppRelativeUrl );
-                        unless( $response->{headers} =~ m!HTTP/1.1 200 OK! ) {
-                            $c->reportError( 'Not HTTP Status 200', $response->{headers} );
-                        }
+                        my $response = $c->get( $filesAppRelativeUrl );
 
                         my $requestToken;
                         if( $response->{content} =~ m!<head.*data-requesttoken="([0-9a-f]+)"! ) {
@@ -180,10 +136,8 @@ my $TEST = new IndieBox::WebAppTest(
                             $c->reportError( 'Cannot find request token', $response->{content} );
                         }
 
-                        $response = httpUploadRelativeContext( $c, '/index.php/apps/files/ajax/upload.php', $testFile, '/', $requestToken );
-                        unless( $response->{headers} =~ m!HTTP/1.1 200 OK! ) {
-                            $c->reportError( 'Not HTTP Status 200', $response->{headers} );
-                        }
+                        $response = upload( $c, '/index.php/apps/files/ajax/upload.php', $testFile, '/', $requestToken );
+                        $c->mustStatus( $response, 200, 'Upload failed' );
 
                         return 1;
                     }
@@ -195,20 +149,16 @@ my $TEST = new IndieBox::WebAppTest(
 
                         # need to login first
                         my $postData = {
-                            'user'            => $custPointValues->{'adminlogin'},
-                            'password'        => $custPointValues->{'adminpass'},
+                            'user'            => $adminlogin,
+                            'password'        => $adminpass,
                             'timezone-offset' => 0
                         };
                         
-                        my $response = $c->httpPostRelativeContext( '/', $postData );
-                        unless( $response->{headers} =~ m!HTTP/1.1 302 Found! ) {
-                            $c->reportError( 'Not HTTP Status 203', $response->{headers} );
-                        }
+                        $c->post( '/', $postData ); # tested that earlier
 
-                        $response = $c->httpGetRelativeContext( $filesAppRelativeUrl . '/download/' . $testFile );
-                        unless( $response->{headers} =~ m!HTTP/1.1 200 OK! ) {
-                            $c->reportError( 'Test file not found', $testFile, $response->{headers} );
-                        }
+                        my $response = $c->get( $filesAppRelativeUrl . '/download/' . $testFile );
+                        $c->mustStatus( $response, 200, 'Test file not found' );
+
                         return 1;
                     }
             )
