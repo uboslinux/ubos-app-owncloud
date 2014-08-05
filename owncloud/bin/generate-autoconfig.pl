@@ -23,25 +23,29 @@ if( 'install' eq $operation ) {
     my $dbpass = $config->getResolve( 'appconfig.mysql.dbusercredential.maindb' );
     my $dbhost = $config->getResolve( 'appconfig.mysql.dbhost.maindb' );
 
+    my $hostname   = $config->getResolve( 'site.hostname' );
     my $adminlogin = $config->getResolve( 'site.admin.userid' );
     my $adminpass  = $config->getResolve( 'site.admin.credential' );
 
     my $autoConfigContent = <<END;
 <?php
 \$AUTOCONFIG = array(
-  "dbtype"        => "mysql",
-  "dbname"        => "$dbname",
-  "dbuser"        => "$dbuser",
-  "dbpass"        => "$dbpass",
-  "dbhost"        => "$dbhost",
-  "dbtableprefix" => "",
-  "adminlogin"    => "$adminlogin",
-  "adminpass"     => "$adminpass",
-  "directory"     => "data"
+  "dbtype"          => "mysql",
+  "dbname"          => "$dbname",
+  "dbuser"          => "$dbuser",
+  "dbpass"          => "$dbpass",
+  "dbhost"          => "$dbhost",
+  "dbtableprefix"   => "",
+  "adminlogin"      => "$adminlogin",
+  "adminpass"       => "$adminpass",
+  "directory"       => "data",
+  "trusted_domains" => array( "$hostname" )
 );
 END
     
     IndieBox::Utils::saveFile( $autoConfigFile, $autoConfigContent, 0640, $apacheUname, $apacheGname );
+
+IndieBox::Utils::saveFile( '/tmp/autoconfig.php', $autoConfigContent, 0640, $apacheUname, $apacheGname );
 }
                 
 1;

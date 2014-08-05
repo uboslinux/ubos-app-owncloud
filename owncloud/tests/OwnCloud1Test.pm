@@ -23,14 +23,15 @@ use warnings;
 
 package OwnCloud1Test;
 
+use IndieBox::Logging;
 use IndieBox::WebAppTest;
-
-# Admin user for this test
-my $adminlogin = 'specialuser';
-my $adminpass  = 'specialpass';
 
 my $filesAppRelativeUrl = '/index.php/apps/files';
 my $testFile            = 'foo-testfile';
+
+unless( -r $testFile ) {
+    fatal( 'Cannot read test file', $testFile, '. You need to start this test from a directory that contains this file.' );
+}
 
 ## We need to test file uploading, and webapptest doesn't really have
 ## any easy methods for that yet. So first, here is a utility routine
@@ -53,7 +54,6 @@ sub upload {
     my $requestToken = shift;
 
     my $url = 'http://' . $c->hostName . $c->context() . $relativeUrl;
-    my $response;
 
     debug( 'Posting to url', $url );
 
@@ -61,17 +61,23 @@ sub upload {
     $cmd .= " -F 'files[]=\@$file;filename=$file;type=text/plain'";
     $cmd .= " -F 'requesttoken=$requestToken'";
     $cmd .= " -F 'dir=$dir'";
+    $cmd .= " -F 'file_directory='"; # whatever that is
     $cmd .= " '$url'";
 
     my $stdout;
     my $stderr;
     if( IndieBox::Utils::myexec( $cmd, undef, \$stdout, \$stderr )) {
-        $c->reportError( 'HTTP request failed:', $stderr );
+        $c->error( 'HTTP request failed:', $stderr );
     }
-    return { 'content'     => $stdout,
-             'headers'     => $stderr,
-             'url'         => $url,
-             'file'        => $file };
+    my $response = {
+        'content'     => $stdout,
+        'headers'     => $stderr,
+        'url'         => $url,
+        'file'        => $file };
+        
+    $c->mustStatus( $response, 200, 'Upload failed' );
+
+    return $response;
 }
 
 
@@ -84,33 +90,38 @@ my $TEST = new IndieBox::WebAppTest(
     appToTest                => 'owncloud',
     testContext              => '/foobar',
     hostname                 => 'owncloud-test',
-    customizationPointValues => { 'adminlogin' => $adminlogin, 'adminpass' => $adminpass },
 
     checks => [
             new IndieBox::WebAppTest::StateCheck(
                     name  => 'virgin',
                     check => sub {
                         my $c = shift;
-
-                        $c->getMustContain( '/', '<label for="user" class="infield">Username</label>', 200, 'Wrong (before log-on) front page' );
-
-                        my $postData = {
-                            'user'            => $adminlogin,
-                            'password'        => $adminpass,
-                            'timezone-offset' => 0
-                        };
                         
-                        my $response = $c->post( '/', $postData );
+                        my $response = $c->getMustContain( '/', '<label for="user" class="infield">Username</label>', 200, 'Wrong (before log-on) front page' );
+                        my $requestToken;
+                        if( $response->{content} =~ m!<input.*name="requesttoken" value="([^"]+)" />! ) {
+                            $requestToken = $1;
+                        } else {
+                            $c->error( 'Cannot find request token', $response->{content} );
+                        }
+                        my $adminData = $c->getTest()->getAdminData();
+                        
+                        my $postData = {
+                            'user'            => $adminData->{userid},
+                            'password'        => $adminData->{credential},
+                            'timezone-offset' => 0,
+                            'requesttoken'    => $requestToken
+                        };
+
+                        $response = $c->post( '/', $postData );
                         $c->mustRedirect( $response, $filesAppRelativeUrl, 302, 'Not redirected to files app' );
                         
-                        $c->getMustContain( $filesAppRelativeUrl, '<label for="user" class="infield">Username</label>', 200, 'Wrong (logged-on) front page (content)' );
-
-                        $c->getMustContain( $filesAppRelativeUrl, '<span id="expandDisplayName">' . $adminlogin . '</span>', 200, 'Wrong (logged-on) front page (user)' );
+                        $c->getMustContain( $filesAppRelativeUrl, '<span id="expandDisplayName">' . $adminData->{userid} . '</span>', 200, 'Wrong (logged-on) front page (display name)' );
+                        $c->getMustContain( $filesAppRelativeUrl, '/index.php/settings/admin', 200, 'Wrong (logged-on) front page (admin)' );
 
                         # uploaded file must not be there
-                        $response = $c->get( $filesAppRelativeUrl . '/download/' . $testFile );
+                        $response = $c->get( $filesAppRelativeUrl . '/ajax/download.php?dir=%2F&files=' . $testFile );
                         $c->mustStatus( $response, 404, 'Test file found but should not' );
-
                         return 1;
                     }
             ),
@@ -119,24 +130,35 @@ my $TEST = new IndieBox::WebAppTest(
                     transition => sub {
                         my $c = shift;
 
-                        # need to login first, and find requesttoken
-                        my $postData = {
-                            'user'            => $adminlogin,
-                            'password'        => $adminpass,
-                            'timezone-offset' => 0
-                        };
-                        $c->post( '/', $postData ); # tested that earlier
-                        
-                        my $response = $c->get( $filesAppRelativeUrl );
+                        # need to login first, and find requesttoken. we tested that earlier
+                        my $response = $c->get( '/' );
 
                         my $requestToken;
-                        if( $response->{content} =~ m!<head.*data-requesttoken="([0-9a-f]+)"! ) {
+                        if( $response->{content} =~ m!<input.*name="requesttoken" value="([^"]+)" />! ) {
                             $requestToken = $1;
                         } else {
-                            $c->reportError( 'Cannot find request token', $response->{content} );
+                            $c->error( 'Cannot find request token', $response->{content} );
                         }
 
-                        $response = upload( $c, '/index.php/apps/files/ajax/upload.php', $testFile, '/', $requestToken );
+                        my $adminData = $c->getTest()->getAdminData();
+                        my $postData = {
+                            'user'            => $adminData->{userid},
+                            'password'        => $adminData->{credential},
+                            'timezone-offset' => 0,
+                            'requesttoken'    => $requestToken
+                        };
+                        $c->post( '/', $postData );
+                        
+                        $response = $c->get( $filesAppRelativeUrl );
+
+                        my $dataRequestToken;
+                        if( $response->{content} =~ m!<head.*data-requesttoken="([0-9a-f]+)"! ) {
+                            $dataRequestToken = $1;
+                        } else {
+                            $c->error( 'Cannot find request token', $response->{content} );
+                        }
+
+                        $response = upload( $c, '/index.php/apps/files/ajax/upload.php', $testFile, '/', $dataRequestToken );
                         $c->mustStatus( $response, 200, 'Upload failed' );
 
                         return 1;
@@ -147,16 +169,26 @@ my $TEST = new IndieBox::WebAppTest(
                     check => sub {
                         my $c = shift;
 
-                        # need to login first
-                        my $postData = {
-                            'user'            => $adminlogin,
-                            'password'        => $adminpass,
-                            'timezone-offset' => 0
-                        };
-                        
-                        $c->post( '/', $postData ); # tested that earlier
+                        # need to login first, and find requesttoken. we tested that earlier
+                        my $response = $c->get( '/' );
 
-                        my $response = $c->get( $filesAppRelativeUrl . '/download/' . $testFile );
+                        my $requestToken;
+                        if( $response->{content} =~ m!<input.*name="requesttoken" value="([^"]+)" />! ) {
+                            $requestToken = $1;
+                        } else {
+                            $c->error( 'Cannot find request token', $response->{content} );
+                        }
+
+                        my $adminData = $c->getTest()->getAdminData();
+                        my $postData = {
+                            'user'            => $adminData->{userid},
+                            'password'        => $adminData->{credential},
+                            'timezone-offset' => 0,
+                            'requesttoken'    => $requestToken
+                        };
+                        $c->post( '/', $postData );
+
+                        $response = $c->get( $filesAppRelativeUrl . '/ajax/download.php?dir=%2F&files=' . $testFile );
                         $c->mustStatus( $response, 200, 'Test file not found' );
 
                         return 1;

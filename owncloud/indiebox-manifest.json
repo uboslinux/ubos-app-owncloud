@@ -22,9 +22,11 @@
         "apache2" : {
             "defaultcontext" : "/owncloud",
             "depends" : [
+                "ffmpeg",
                 "php",
                 "php-apache",
                 "php-gd",
+                "php-xcache",
                 "sudo"
             ],
             "apache2modules" : [
@@ -39,9 +41,10 @@
                 "iconv",
                 "mysql",
                 "mysqli",
+                "openssl",
                 "pdo_mysql",
-                "zip",
-                "openssl"
+                "xcache",
+                "zip"
             ],
             "appconfigitems" : [
                 {

@@ -1,7 +1,7 @@
 developer=http://owncloud.org/
 maintainer=http://indiebox.net/
 pkgname=$(basename $(pwd))
-pkgver=6.0.4
+pkgver=7.0.1
 pkgrel=1
 pkgdesc="Your Cloud, Your Data, Your Way!"
 arch=('any')
@@ -12,7 +12,7 @@ depends=()
 backup=()
 source=("http://download.owncloud.org/community/owncloud-${pkgver}.tar.bz2")
 options=('!strip')
-md5sums=('0a92cf5971e9c9c58e40219b385bd8f4')
+md5sums=('a922504271aa4dbca83b28aec1c11178')
 # from http://stackoverflow.com/questions/1251999/sed-how-can-i-replace-a-newline-n
 _parameterize=$(cat <<END
     s!##pkgname##!$pkgname!g;
