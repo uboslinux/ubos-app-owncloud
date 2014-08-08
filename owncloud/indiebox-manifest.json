@@ -22,7 +22,6 @@
         "apache2" : {
             "defaultcontext" : "/owncloud",
             "depends" : [
-                "ffmpeg",
                 "php",
                 "php-apache",
                 "php-gd",
