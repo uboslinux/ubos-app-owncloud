@@ -21,15 +21,35 @@ if( 'install' eq $operation ) {
         die( "Activating OwnCloud in $dir failed: out: $out\nerr: $err" );
     }
 
-    # now replace 'localhost' in the generated config.php with the actual site hostname
+    # now replace 'localhost' in the 'trusted_domains' section of the
+    # generated config.php with the actual site hostname
     my $configFile = "$dir/config/config.php";
     if( -e $configFile ) {
         my $configContent = IndieBox::Utils::slurpFile( $configFile );
+IndieBox::Utils::saveFile( '/tmp/config.php', $configFile );
 
-        $configContent =~ s!'localhost'!'$hostname'!;
+        $configContent =~ s!(\d+\s*=>\s*)'localhost'!$1'$hostname'!;
 
         IndieBox::Utils::saveFile( $configFile, $configContent, 0640, $apacheUname, $apacheGname );
     }
 }
+<?php
+$CONFIG = array (
+  'passwordsalt' => '46f66ce3a2cde45755f33c2dc56523',
+  'trusted_domains' => 
+  array (
+    0 => 'owncloud-test',
+  ),
+  'datadirectory' => 'data',
+  'dbtype' => 'mysql',
+  'version' => '7.0.1.1',
+  'dbname' => 'apasnnfzawthzxtn',
+  'dbhost' => 'owncloud-test',
+  'dbtableprefix' => '',
+  'dbuser' => 'ZkeMzJw48XH9eON1',
+  'dbpassword' => 'La0iaBi5BMXeCyog',
+  'installed' => true,
+  'instanceid' => 'ocbcefbe9445',
+);
 
 1;
