@@ -97,7 +97,15 @@ my $TEST = new IndieBox::WebAppTest(
                     check => sub {
                         my $c = shift;
                         
-                        my $response = $c->getMustContain( '/', '<label for="user" class="infield">Username</label>', 200, 'Wrong (before log-on) front page' );
+                        # Accessing the front page for the first time will cause a redirect to /index.php/post-setup-check,
+                        # which will redirect back to the front if everything is okay. When accessed the second time, however,
+                        # the redirect may not occur.
+                        my $response = $c->get( '/' );
+                        if( $c->redirects( $response, '/index.php/post-setup-check' )) {
+                            $c->getMustRedirect( '/index.php/post-setup-check', '/' );
+                        }
+
+                        $response = $c->getMustContain( '/', '<label for="user" class="infield">Username</label>', 200, 'Wrong (before log-on) front page' );
                         my $requestToken;
                         if( $response->{content} =~ m!<input.*name="requesttoken" value="([^"]+)" />! ) {
                             $requestToken = $1;
