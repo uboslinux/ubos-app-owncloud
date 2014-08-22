@@ -5,7 +5,7 @@
 
 use strict;
 
-use IndieBox::Utils;
+use UBOS::Utils;
 use POSIX;
 
 my $dir         = $config->getResolve( 'appconfig.apache2.dir' );
@@ -17,7 +17,7 @@ if( 'install' eq $operation ) {
     # now we need to hit the installation ourselves, otherwise the first user gets admin access
     my $out;
     my $err;
-    if( IndieBox::Utils::myexec( "cd $dir; sudo -u $apacheUname php index.php", undef, \$out, \$err ) != 0 ) {
+    if( UBOS::Utils::myexec( "cd $dir; sudo -u $apacheUname php index.php", undef, \$out, \$err ) != 0 ) {
         die( "Activating OwnCloud in $dir failed: out: $out\nerr: $err" );
     }
 
@@ -25,12 +25,11 @@ if( 'install' eq $operation ) {
     # generated config.php with the actual site hostname
     my $configFile = "$dir/config/config.php";
     if( -e $configFile ) {
-        my $configContent = IndieBox::Utils::slurpFile( $configFile );
-IndieBox::Utils::saveFile( '/tmp/config.php', $configFile );
+        my $configContent = UBOS::Utils::slurpFile( $configFile );
 
         $configContent =~ s!(\d+\s*=>\s*)'localhost'!$1'$hostname'!;
 
-        IndieBox::Utils::saveFile( $configFile, $configContent, 0640, $apacheUname, $apacheGname );
+        UBOS::Utils::saveFile( $configFile, $configContent, 0640, $apacheUname, $apacheGname );
     }
 }
 

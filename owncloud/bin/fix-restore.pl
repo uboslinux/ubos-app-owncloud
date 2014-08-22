@@ -8,7 +8,7 @@
 
 use strict;
 
-use IndieBox::Utils;
+use UBOS::Utils;
 use POSIX;
 
 my $dir          = $config->getResolve( 'appconfig.apache2.dir' );
@@ -22,7 +22,7 @@ my $hostname    = $config->getResolve( 'site.hostname' );
 
 if( 'upgrade' eq $operation ) {
 
-    my $autoConf = IndieBox::Utils::slurpFile( $autoConfFile );
+    my $autoConf = UBOS::Utils::slurpFile( $autoConfFile );
 
     my $dbname;
     my $dbuser;
@@ -42,16 +42,16 @@ if( 'upgrade' eq $operation ) {
         $dbhost = $1;
     }
 
-    my $conf = IndieBox::Utils::slurpFile( $confFile );
+    my $conf = UBOS::Utils::slurpFile( $confFile );
     $conf =~ s!(['"]dbname['"]\s+=>\s["'])\S*(["'],?)!$1$dbname$2!;
     $conf =~ s!(['"]dbhost['"]\s+=>\s["'])\S*(["'],?)!$1$dbhost$2!;
     $conf =~ s!(['"]dbuser['"]\s+=>\s["'])\S*(["'],?)!$1$dbuser$2!;
     $conf =~ s!(['"]dbpassword['"]\s+=>\s["'])\S*(["'],?)!$1$dbpass$2!;
     $conf =~ s!(['"]trusted_domains['"]\s+=>\s*array\s*\(\s*0\s*=>\s*["'])\S*(\s*['"]\s*\))!$1$hostname$2!;
 
-    IndieBox::Utils::saveFile( $confFile, $conf, 0640, $apacheUname, $apacheGname );
+    UBOS::Utils::saveFile( $confFile, $conf, 0640, $apacheUname, $apacheGname );
 
-    IndieBox::Utils::deleteFile( $autoConfFile );
+    UBOS::Utils::deleteFile( $autoConfFile );
 }
 
 1;

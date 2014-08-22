@@ -23,8 +23,8 @@ use warnings;
 
 package OwnCloud1Test;
 
-use IndieBox::Logging;
-use IndieBox::WebAppTest;
+use UBOS::Logging;
+use UBOS::WebAppTest;
 
 my $filesAppRelativeUrl = '/index.php/apps/files';
 my $testFile            = 'foo-testfile';
@@ -66,7 +66,7 @@ sub upload {
 
     my $stdout;
     my $stderr;
-    if( IndieBox::Utils::myexec( $cmd, undef, \$stdout, \$stderr )) {
+    if( UBOS::Utils::myexec( $cmd, undef, \$stdout, \$stderr )) {
         $c->error( 'HTTP request failed:', $stderr );
     }
     my $response = {
@@ -84,7 +84,7 @@ sub upload {
 ##
 
 
-my $TEST = new IndieBox::WebAppTest(
+my $TEST = new UBOS::WebAppTest(
     name                     => 'OwnCloud1Test',
     description              => 'Tests admin account and single-file upload.',
     appToTest                => 'owncloud',
@@ -92,7 +92,7 @@ my $TEST = new IndieBox::WebAppTest(
     hostname                 => 'owncloud-test',
 
     checks => [
-            new IndieBox::WebAppTest::StateCheck(
+            new UBOS::WebAppTest::StateCheck(
                     name  => 'virgin',
                     check => sub {
                         my $c = shift;
@@ -133,7 +133,7 @@ my $TEST = new IndieBox::WebAppTest(
                         return 1;
                     }
             ),
-            new IndieBox::WebAppTest::StateTransition(
+            new UBOS::WebAppTest::StateTransition(
                     name       => 'upload-file',
                     transition => sub {
                         my $c = shift;
@@ -172,7 +172,7 @@ my $TEST = new IndieBox::WebAppTest(
                         return 1;
                     }
             ),
-            new IndieBox::WebAppTest::StateCheck(
+            new UBOS::WebAppTest::StateCheck(
                     name  => 'file-uploaded',
                     check => sub {
                         my $c = shift;

@@ -1,36 +1,20 @@
 developer=http://owncloud.org/
-maintainer=http://indiebox.net/
+url=${developer}
+maintainer=http://indiecomputing.com/
 pkgname=$(basename $(pwd))
 pkgver=7.0.1
-pkgrel=4
+pkgrel=5
 pkgdesc="Your Cloud, Your Data, Your Way!"
 arch=('any')
-url=${developer}
 license=("GPL")
-groups=()
-depends=()
-backup=()
 source=("http://download.owncloud.org/community/owncloud-${pkgver}.tar.bz2")
 options=('!strip')
 md5sums=('a922504271aa4dbca83b28aec1c11178')
-# from http://stackoverflow.com/questions/1251999/sed-how-can-i-replace-a-newline-n
-_parameterize=$(cat <<END
-    s!##pkgname##!$pkgname!g;
-    s/##pkgdesc##/$pkgdesc/g;
-    s!##developer##!$developer!g;
-    s!##maintainer##!$maintainer!g;
-    s!##pkgver##!$pkgver!g;
-    s!##pkgrel##!$pkgrel!g;
-    s!##license##!$license!g;
-    s!##description##!$description!g;
-END
-)
 
 package() {
 # Manifest
-    mkdir -p $pkgdir/var/lib/indiebox/manifests
-    perl -pe "$_parameterize" $startdir/indiebox-manifest.json > $pkgdir/var/lib/indiebox/manifests/${pkgname}.json
-    chmod 0644 $pkgdir/var/lib/indiebox/manifests/${pkgname}.json
+    mkdir -p $pkgdir/var/lib/ubos/manifests
+    install -m0644 $startdir/ubos-manifest.json $pkgdir/var/lib/ubos/manifests/${pkgname}.json
 
 # Icons
     mkdir -p $pkgdir/srv/http/_appicons/$pkgname

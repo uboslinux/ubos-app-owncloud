@@ -2,12 +2,12 @@
 #
 # Generate the autoconfig.php file. This is a perlscript instead of a
 # varsubst-d template because OwnCloud will remove this file, and then
-# Indie Box undeploy will emit a warning, and we don't want that.
+# ubos-admin undeploy will emit a warning, and we don't want that.
 #
 
 use strict;
 
-use IndieBox::Utils;
+use UBOS::Utils;
 use POSIX;
 
 if( 'install' eq $operation ) {
@@ -43,9 +43,7 @@ if( 'install' eq $operation ) {
 );
 END
     
-    IndieBox::Utils::saveFile( $autoConfigFile, $autoConfigContent, 0640, $apacheUname, $apacheGname );
+    UBOS::Utils::saveFile( $autoConfigFile, $autoConfigContent, 0640, $apacheUname, $apacheGname );
 
-IndieBox::Utils::saveFile( '/tmp/autoconfig.php', $autoConfigContent, 0640, $apacheUname, $apacheGname );
-}
                 
 1;

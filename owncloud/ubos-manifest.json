@@ -1,23 +1,6 @@
 {
     "type" : "app",
 
-    "info" : {
-        "package"         : "##pkgname##",
-        "name"            : "Owncloud",
-        "tagline"         : "##pkgdesc##",
-        "description"     : "##description##",
-
-        "developer"       : "##developer##",
-        "maintainer"      : "##maintainer##",
-
-        "upstreamversion" : "##pkgver##",
-        "packageversion"  : "##pkgver##-##pkgrel##",
-
-        "licenses" : [
-            "##license##"
-        ]
-    },
-
     "roles" : {
         "apache2" : {
             "defaultcontext" : "/owncloud",

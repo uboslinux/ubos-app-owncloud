@@ -5,7 +5,7 @@
 
 use strict;
 
-use IndieBox::Utils;
+use UBOS::Utils;
 use POSIX;
 
 my $dir         = $config->getResolve( 'appconfig.apache2.dir' );
@@ -15,7 +15,7 @@ my $apacheUname = $config->getResolve( 'apache2.uname' );
 my $apacheGname = $config->getResolve( 'apache2.gname' );
 
 if( 'install' eq $operation ) {
-    IndieBox::Utils::myexec( "chown -R $apacheUname:$apacheGname '$appsDir' '$dir/index.html'" );
+    UBOS::Utils::myexec( "chown -R $apacheUname:$apacheGname '$appsDir' '$dir/index.html'" );
 }
 
 1;
