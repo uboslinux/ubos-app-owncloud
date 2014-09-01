@@ -44,6 +44,5 @@ if( 'install' eq $operation ) {
 END
     
     UBOS::Utils::saveFile( $autoConfigFile, $autoConfigContent, 0640, $apacheUname, $apacheGname );
-
-                
+}
 1;
