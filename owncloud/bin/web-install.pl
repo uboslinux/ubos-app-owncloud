@@ -5,6 +5,7 @@
 
 use strict;
 
+use UBOS::Logging;
 use UBOS::Utils;
 use POSIX;
 
@@ -18,7 +19,7 @@ if( 'install' eq $operation ) {
     my $out;
     my $err;
     if( UBOS::Utils::myexec( "cd $dir; sudo -u $apacheUname php index.php", undef, \$out, \$err ) != 0 ) {
-        die( "Activating OwnCloud in $dir failed: out: $out\nerr: $err" );
+        error( "Activating OwnCloud in $dir failed: out: $out\nerr: $err" );
     }
 
     # now replace 'localhost' in the 'trusted_domains' section of the
