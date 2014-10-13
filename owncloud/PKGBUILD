@@ -2,30 +2,34 @@ developer=http://owncloud.org/
 url=${developer}
 maintainer=http://indiecomputing.com/
 pkgname=$(basename $(pwd))
-pkgver=7.0.1
-pkgrel=7
+pkgver=7.0.2
+pkgrel=1
 pkgdesc="Your Cloud, Your Data, Your Way!"
 arch=('any')
 license=("GPL")
 source=("http://download.owncloud.org/community/owncloud-${pkgver}.tar.bz2")
 options=('!strip')
-md5sums=('a922504271aa4dbca83b28aec1c11178')
+md5sums=('4af57e093878917d80004f7151f9282e')
 
 package() {
 # Manifest
-    mkdir -p $pkgdir/var/lib/ubos/manifests
-    install -m0644 $startdir/ubos-manifest.json $pkgdir/var/lib/ubos/manifests/${pkgname}.json
+    mkdir -p ${pkgdir}/var/lib/ubos/manifests
+    install -m0644 ${startdir}/ubos-manifest.json ${pkgdir}/var/lib/ubos/manifests/${pkgname}.json
 
 # Icons
-    mkdir -p $pkgdir/srv/http/_appicons/$pkgname
-    install -m644 $startdir/appicons/{72x72,144x144}.png $pkgdir/srv/http/_appicons/$pkgname/
+    mkdir -p ${pkgdir}/srv/http/_appicons/$pkgname
+    install -m644 ${startdir}/appicons/{72x72,144x144}.png ${pkgdir}/srv/http/_appicons/$pkgname/
 
+# Data
+    mkdir -p ${pkgdir}/var/lib/owncloud
+    
 # Code
-    mkdir -p $pkgdir/usr/share/${pkgname}/bin
-    install -m755 $startdir/bin/{fix-permissions,fix-restore,generate-autoconfig,web-install}.pl $pkgdir/usr/share/${pkgname}/bin/
+    mkdir -p ${pkgdir}/usr/share/${pkgname}/bin
+    install -m755 ${startdir}/bin/{fix-permissions,fix-restore,generate-autoconfig,web-install}.pl ${pkgdir}/usr/share/${pkgname}/bin/
 
-    mkdir -p $pkgdir/usr/share/${pkgname}/tmpl
-    install -m644 $startdir/tmpl/htaccess.tmpl $pkgdir/usr/share/${pkgname}/tmpl/
+    mkdir -p ${pkgdir}/usr/share/${pkgname}/tmpl
+    install -m644 ${startdir}/tmpl/htaccess.tmpl ${pkgdir}/usr/share/${pkgname}/tmpl/
+    touch ${pkgdir}/usr/share/${pkgname}/tmpl/ocdata
 
-    cp -dr --no-preserve=ownership $startdir/src/owncloud $pkgdir/usr/share/${pkgname}/
+    cp -dr --no-preserve=ownership ${startdir}/src/owncloud ${pkgdir}/usr/share/${pkgname}/
 }

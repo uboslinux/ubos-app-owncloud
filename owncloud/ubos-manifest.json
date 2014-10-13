@@ -61,11 +61,27 @@
                 {
                     "type"  : "directory",
                     "name"  : "data",
+                    "permissions" : "0750",
+                    "uname"       : "${apache2.uname}",
+                    "gname"       : "${apache2.gname}"
+                },
+                {
+                    "type"  : "directory",
+                    "name"  : "${appconfig.datadir}"
+                },
+                {
+                    "type"  : "directory",
+                    "name"  : "${appconfig.datadir}/data",
                     "retentionpolicy" : "keep",
                     "retentionbucket" : "datadir",
                     "permissions" : "0750",
                     "uname"       : "${apache2.uname}",
                     "gname"       : "${apache2.gname}"
+                },
+                {
+                    "type"         : "file",
+                    "name"         : "${appconfig.datadir}/data/.ocdata",
+                    "source"       : "tmpl/ocdata"
                 },
                 {
                     "type"  : "directory",

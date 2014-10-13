@@ -27,6 +27,8 @@ if( 'install' eq $operation ) {
     my $adminlogin = $config->getResolve( 'site.admin.userid' );
     my $adminpass  = $config->getResolve( 'site.admin.credential' );
 
+    my $datadir = $config->getResolve( 'appconfig.datadir' ) . '/data';
+
     my $autoConfigContent = <<END;
 <?php
 \$AUTOCONFIG = array(
@@ -38,7 +40,7 @@ if( 'install' eq $operation ) {
   "dbtableprefix"   => "",
   "adminlogin"      => "$adminlogin",
   "adminpass"       => "$adminpass",
-  "directory"       => "data",
+  "directory"       => "$datadir",
   "trusted_domains" => array( "$hostname" )
 );
 END
