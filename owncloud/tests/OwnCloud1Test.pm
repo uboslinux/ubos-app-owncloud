@@ -23,14 +23,16 @@ use warnings;
 
 package OwnCloud1Test;
 
+use File::Basename;
 use UBOS::Logging;
 use UBOS::WebAppTest;
 
 my $filesAppRelativeUrl = '/index.php/apps/files';
 my $testFile            = 'foo-testfile';
+my $fullTestFile        = dirname( $fileName ) . '/' . $testFile; # variable inherited from invocation
 
-unless( -r $testFile ) {
-    fatal( 'Cannot read test file', $testFile, '. You need to start this test from a directory that contains this file.' );
+unless( -r $fullTestFile ) {
+    fatal( 'Cannot read test file', $fullTestFile, '.' );
 }
 
 ## We need to test file uploading, and webapptest doesn't really have
@@ -42,7 +44,8 @@ unless( -r $testFile ) {
 # application is being tested.
 # $c: TestContext
 # $relativeUrl: appended to the host's URL
-# $file: name of the file to be uploaded
+# $file: name of the file to be uploaded after it has arrived in ownCloud
+# $fullFile: the name of the file to be uploaded in the filesystem
 # $dir: the directory parameter
 # $requestToken: the form's request token
 # return: hash containing content and headers of the HTTP response
@@ -50,6 +53,7 @@ sub upload {
     my $c            = shift;
     my $relativeUrl  = shift;
     my $file         = shift;
+    my $fullFile     = shift;
     my $dir          = shift;
     my $requestToken = shift;
 
@@ -58,7 +62,7 @@ sub upload {
     debug( 'Posting to url', $url );
 
     my $cmd = $c->{curl};
-    $cmd .= " -F 'files[]=\@$file;filename=$file;type=text/plain'";
+    $cmd .= " -F 'files[]=\@$fullFile;filename=$file;type=text/plain'";
     $cmd .= " -F 'requesttoken=$requestToken'";
     $cmd .= " -F 'dir=$dir'";
     $cmd .= " -F 'file_directory='"; # whatever that is
@@ -166,7 +170,7 @@ my $TEST = new UBOS::WebAppTest(
                             $c->error( 'Cannot find request token', $response->{content} );
                         }
 
-                        $response = upload( $c, '/index.php/apps/files/ajax/upload.php', $testFile, '/', $dataRequestToken );
+                        $response = upload( $c, '/index.php/apps/files/ajax/upload.php', $testFile, $fullTestFile, '/', $dataRequestToken );
                         $c->mustStatus( $response, 200, 'Upload failed' );
 
                         return 1;
