@@ -2,14 +2,14 @@ developer=http://owncloud.org/
 url=${developer}
 maintainer=http://indiecomputing.com/
 pkgname=$(basename $(pwd))
-pkgver=7.0.2
+pkgver=7.0.3
 pkgrel=1
 pkgdesc="Your cloud, your data, your way!"
 arch=('any')
 license=("GPL")
 source=("http://download.owncloud.org/community/owncloud-${pkgver}.tar.bz2")
 options=('!strip')
-md5sums=('4af57e093878917d80004f7151f9282e')
+md5sums=('d5d2ad068046e6ddb322cf001a9bb3d5')
 
 package() {
 # Manifest

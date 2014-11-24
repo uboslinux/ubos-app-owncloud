@@ -113,27 +113,30 @@ my $TEST = new UBOS::WebAppTest(
                         my $requestToken;
                         if( $response->{content} =~ m!<input.*name="requesttoken" value="([^"]+)" />! ) {
                             $requestToken = $1;
+
+                            my $adminData = $c->getTest()->getAdminData();
+                            
+                            my $postData = {
+                                'user'            => $adminData->{userid},
+                                'password'        => $adminData->{credential},
+                                'timezone-offset' => 0,
+                                'requesttoken'    => $requestToken
+                            };
+
+                            $response = $c->post( '/', $postData );
+                            $c->mustRedirect( $response, $filesAppRelativeUrl, 302, 'Not redirected to files app' );
+                            
+                            $c->getMustContain( $filesAppRelativeUrl, '<span id="expandDisplayName">' . $adminData->{userid} . '</span>', 200, 'Wrong (logged-on) front page (display name)' );
+                            $c->getMustContain( $filesAppRelativeUrl, '/index.php/settings/admin', 200, 'Wrong (logged-on) front page (admin)' );
+
+                            # uploaded file must not be there
+                            $response = $c->get( $filesAppRelativeUrl . '/ajax/download.php?dir=%2F&files=' . $testFile );
+                            $c->mustStatus( $response, 404, 'Test file found but should not' );
+
                         } else {
                             $c->error( 'Cannot find request token', $response->{content} );
                         }
-                        my $adminData = $c->getTest()->getAdminData();
-                        
-                        my $postData = {
-                            'user'            => $adminData->{userid},
-                            'password'        => $adminData->{credential},
-                            'timezone-offset' => 0,
-                            'requesttoken'    => $requestToken
-                        };
 
-                        $response = $c->post( '/', $postData );
-                        $c->mustRedirect( $response, $filesAppRelativeUrl, 302, 'Not redirected to files app' );
-                        
-                        $c->getMustContain( $filesAppRelativeUrl, '<span id="expandDisplayName">' . $adminData->{userid} . '</span>', 200, 'Wrong (logged-on) front page (display name)' );
-                        $c->getMustContain( $filesAppRelativeUrl, '/index.php/settings/admin', 200, 'Wrong (logged-on) front page (admin)' );
-
-                        # uploaded file must not be there
-                        $response = $c->get( $filesAppRelativeUrl . '/ajax/download.php?dir=%2F&files=' . $testFile );
-                        $c->mustStatus( $response, 404, 'Test file found but should not' );
                         return 1;
                     }
             ),

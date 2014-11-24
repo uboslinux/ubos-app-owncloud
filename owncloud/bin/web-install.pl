@@ -10,6 +10,7 @@ use UBOS::Utils;
 use POSIX;
 
 my $dir         = $config->getResolve( 'appconfig.apache2.dir' );
+my $datadir     = $config->getResolve( 'appconfig.datadir' ) . '/data';
 my $apacheUname = $config->getResolve( 'apache2.uname' );
 my $apacheGname = $config->getResolve( 'apache2.gname' );
 my $hostname    = $config->getResolve( 'site.hostname' );
@@ -18,7 +19,13 @@ if( 'install' eq $operation ) {
     # now we need to hit the installation ourselves, otherwise the first user gets admin access
     my $out;
     my $err;
-    if( UBOS::Utils::myexec( "cd $dir; sudo -u $apacheUname php index.php", undef, \$out, \$err ) != 0 ) {
+
+    my $cmd = "cd '$dir';";
+    $cmd .= "sudo -u $apacheUname php";
+    $cmd .= " -d open_basedir=$dir:/tmp/:/usr/share/:$datadir";
+    $cmd .= " index.php";
+
+    if( UBOS::Utils::myexec( $cmd, undef, \$out, \$err ) != 0 ) {
         error( "Activating OwnCloud in $dir failed: out: $out\nerr: $err" );
     }
 
