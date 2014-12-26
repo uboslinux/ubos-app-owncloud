@@ -61,7 +61,7 @@
                 {
                     "type"  : "directory",
                     "name"  : "data",
-                    "permissions" : "0750",
+                    "dirpermissions"  : "0750",
                     "uname"       : "${apache2.uname}",
                     "gname"       : "${apache2.gname}"
                 },
@@ -74,7 +74,8 @@
                     "name"  : "${appconfig.datadir}/data",
                     "retentionpolicy" : "keep",
                     "retentionbucket" : "datadir",
-                    "permissions" : "0750",
+                    "dirpermissions"  : "0750",
+                    "filepermissions" : "0640",
                     "uname"       : "${apache2.uname}",
                     "gname"       : "${apache2.gname}"
                 },
@@ -88,7 +89,8 @@
                     "name"  : "config",
                     "retentionpolicy" : "keep",
                     "retentionbucket" : "configdir",
-                    "permissions" : "0750",
+                    "dirpermissions"  : "0750",
+                    "filepermissions" : "0640",
                     "uname"       : "${apache2.uname}",
                     "gname"       : "${apache2.gname}"
                 },
