@@ -3,7 +3,7 @@ url=${developer}
 maintainer=http://indiecomputing.com/
 pkgname=$(basename $(pwd))
 pkgver=7.0.3
-pkgrel=2
+pkgrel=3
 pkgdesc="Your cloud, your data, your way!"
 arch=('any')
 license=("GPL")
@@ -25,7 +25,7 @@ package() {
     
 # Code
     mkdir -p ${pkgdir}/usr/share/${pkgname}/bin
-    install -m755 ${startdir}/bin/{fix-permissions,fix-restore,generate-autoconfig,web-install}.pl ${pkgdir}/usr/share/${pkgname}/bin/
+    install -m755 ${startdir}/bin/{create-ocdata,fix-permissions,fix-restore,generate-autoconfig,web-install}.pl ${pkgdir}/usr/share/${pkgname}/bin/
 
     mkdir -p ${pkgdir}/usr/share/${pkgname}/tmpl
     install -m644 ${startdir}/tmpl/htaccess.tmpl ${pkgdir}/usr/share/${pkgname}/tmpl/

@@ -80,11 +80,6 @@
                     "gname"       : "${apache2.gname}"
                 },
                 {
-                    "type"         : "file",
-                    "name"         : "${appconfig.datadir}/data/.ocdata",
-                    "source"       : "tmpl/ocdata"
-                },
-                {
                     "type"  : "directory",
                     "name"  : "config",
                     "retentionpolicy" : "keep",
@@ -99,6 +94,10 @@
                     "name"         : "${appconfig.apache2.appconfigfragmentfile}",
                     "template"     : "tmpl/htaccess.tmpl",
                     "templatelang" : "varsubst"
+                },
+                {
+                    "type"   : "perlscript",
+                    "source" : "bin/create-ocdata.pl"
                 },
                 {
                     "type"   : "perlscript",
