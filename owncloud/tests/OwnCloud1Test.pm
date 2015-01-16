@@ -89,9 +89,8 @@ sub upload {
 
 
 my $TEST = new UBOS::WebAppTest(
-    name                     => 'OwnCloud1Test',
-    description              => 'Tests admin account and single-file upload.',
-    appToTest                => 'owncloud',
+    description => 'Tests admin account and single-file upload.',
+    appToTest   => 'owncloud',
 
     checks => [
             new UBOS::WebAppTest::StateCheck(
