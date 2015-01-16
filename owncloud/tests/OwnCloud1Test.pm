@@ -27,7 +27,7 @@ use File::Basename;
 use UBOS::Logging;
 use UBOS::WebAppTest;
 
-my $filesAppRelativeUrl = '/index.php/apps/files';
+my $filesAppRelativeUrl = '/index.php/apps/files/';
 my $testFile            = 'foo-testfile';
 my $fullTestFile        = dirname( $fileName ) . '/' . $testFile; # variable inherited from invocation
 
@@ -92,8 +92,6 @@ my $TEST = new UBOS::WebAppTest(
     name                     => 'OwnCloud1Test',
     description              => 'Tests admin account and single-file upload.',
     appToTest                => 'owncloud',
-    testContext              => '/foobar',
-    hostname                 => 'owncloud-test',
 
     checks => [
             new UBOS::WebAppTest::StateCheck(
@@ -114,7 +112,7 @@ my $TEST = new UBOS::WebAppTest(
                         if( $response->{content} =~ m!<input.*name="requesttoken" value="([^"]+)" />! ) {
                             $requestToken = $1;
 
-                            my $adminData = $c->getTest()->getAdminData();
+                            my $adminData = $c->getTestPlan()->getAdminData();
                             
                             my $postData = {
                                 'user'            => $adminData->{userid},
@@ -155,7 +153,7 @@ my $TEST = new UBOS::WebAppTest(
                             $c->error( 'Cannot find request token', $response->{content} );
                         }
 
-                        my $adminData = $c->getTest()->getAdminData();
+                        my $adminData = $c->getTestPlan()->getAdminData();
                         my $postData = {
                             'user'            => $adminData->{userid},
                             'password'        => $adminData->{credential},
@@ -194,7 +192,7 @@ my $TEST = new UBOS::WebAppTest(
                             $c->error( 'Cannot find request token', $response->{content} );
                         }
 
-                        my $adminData = $c->getTest()->getAdminData();
+                        my $adminData = $c->getTestPlan()->getAdminData();
                         my $postData = {
                             'user'            => $adminData->{userid},
                             'password'        => $adminData->{credential},
