@@ -57,7 +57,7 @@ sub upload {
     my $dir          = shift;
     my $requestToken = shift;
 
-    my $url = 'http://' . $c->hostName . $c->context() . $relativeUrl;
+    my $url = 'http://' . $c->hostname . $c->context() . $relativeUrl;
 
     debug( 'Posting to url', $url );
 
