@@ -1,8 +1,5 @@
 <Directory "${appconfig.apache2.dir}">
   <IfModule php5_module>
-    php_admin_value open_basedir ${appconfig.apache2.dir}:/tmp/:/usr/share/:${appconfig.datadir}
+    php_admin_value open_basedir ${appconfig.apache2.dir}:/tmp/:/usr/share/:/dev:${appconfig.datadir}
   </IfModule>
 </Directory>
-
-
-

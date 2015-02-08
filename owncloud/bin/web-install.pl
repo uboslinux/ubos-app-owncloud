@@ -21,9 +21,10 @@ if( 'install' eq $operation ) {
     my $err;
 
     my $cmd = "cd '$dir';";
-    $cmd .= "sudo -u $apacheUname php";
-    $cmd .= " -d open_basedir=$dir:/tmp/:/usr/share/:$datadir";
-    $cmd .= " index.php";
+    $cmd .= "sudo -u '$apacheUname' php";
+    $cmd .= " -d 'open_basedir=$dir:/tmp/:/usr/share/:$datadir'";
+    $cmd .= ' -d always_populate_raw_post_data=-1';
+    $cmd .= ' index.php';
 
     if( UBOS::Utils::myexec( $cmd, undef, \$out, \$err ) != 0 ) {
         error( "Activating OwnCloud in $dir failed: out: $out\nerr: $err" );

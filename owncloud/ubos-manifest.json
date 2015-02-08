@@ -32,6 +32,7 @@
                 {
                     "type" : "directorytree",
                     "names" : [
+                        ".htaccess",
                         "3rdparty",
                         "apps",
                         "console.php",
@@ -46,7 +47,6 @@
                         "ocs",
                         "public.php",
                         "remote.php",
-                        "search",
                         "settings",
                         "status.php",
                         "themes",
