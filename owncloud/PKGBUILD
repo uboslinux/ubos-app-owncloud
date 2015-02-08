@@ -12,9 +12,9 @@ source=("http://download.owncloud.org/community/testing/owncloud-${pkgver}.tar.b
 options=('!strip')
 md5sums=('bb27c898d826e8be8098f2bb3eb70b21')
 
-# prepare() {
-#    patch ${startdir}/src/owncloud/lib/private/request.php ${startdir}/allow-wildcard-trusted.patch
-# }
+prepare() {
+    patch ${startdir}/src/owncloud/lib/private/request.php ${startdir}/allow-wildcard-trusted.patch
+}
 
 package() {
 # Manifest

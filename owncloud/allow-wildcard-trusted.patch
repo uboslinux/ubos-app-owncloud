@@ -1,16 +1,16 @@
---- request.php	2014-11-10 16:18:34.000000000 +0000
-+++ request.new	2015-01-16 00:33:39.079018406 +0000
-@@ -43,7 +43,38 @@
- 		if (preg_match(self::REGEX_LOCALHOST, $domain) === 1) {
+--- request.php	2015-02-04 23:35:57.000000000 +0000
++++ request.new	2015-02-08 00:12:40.089512882 +0000
+@@ -110,9 +110,39 @@
  			return true;
  		}
+ 
 -		return in_array($domain, $trustedList);
-+
+-	}
 +		// Allow access from an explicitly listed domain
 +		if( in_array($domain, $trustedList)) {
 +			return true;
 +		}
-+
+ 
 +		// If a value contains a *, apply glob-style matching. Any second * is ignored.
 +		foreach ($trustedList as $trusted) {
 +			if($trusted == '*') {
@@ -24,7 +24,7 @@
 +				if(strrpos($domain, substr($trusted, 1)) !== FALSE) {
 +					return true;
 +				}
-+                        } elseif($star === strlen($trusted)-1) {
++            } elseif($star === strlen($trusted)-1) {
 +				if(strpos($domain, substr($trusted, 0, strlen($trusted)-1 )) !== FALSE) {
 +					return true;
 +				}
@@ -37,6 +37,8 @@
 +			}
 +		}
 +		return false;
- 	}
- 
++	}
++    
  	/**
+ 	 * Returns the unverified server host from the headers without checking
+ 	 * whether it is a trusted domain
