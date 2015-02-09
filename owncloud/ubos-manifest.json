@@ -118,7 +118,11 @@
                 {
                     "type"   : "perlscript",
                     "source" : "bin/fix-restore.pl"
-                }
+                },
+                {
+                    "type"   : "perlscript",
+                    "source" : "bin/upgrade.pl"
+                },
             ]
         },
         "mysql" : {

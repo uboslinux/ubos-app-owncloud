@@ -2,15 +2,15 @@ developer=http://owncloud.org/
 url=${developer}
 maintainer=http://indiecomputing.com/
 pkgname=$(basename $(pwd))
-pkgver=8.0.0RC2
+pkgver=8.0.0
 pkgrel=1
 pkgdesc="Your cloud, your data, your way!"
 arch=('any')
 license=("GPL")
-# source=("http://download.owncloud.org/community/owncloud-${pkgver}.tar.bz2")
-source=("http://download.owncloud.org/community/testing/owncloud-${pkgver}.tar.bz2")
+source=("http://download.owncloud.org/community/owncloud-${pkgver}.tar.bz2")
+# source=("http://download.owncloud.org/community/testing/owncloud-${pkgver}.tar.bz2")
 options=('!strip')
-md5sums=('bb27c898d826e8be8098f2bb3eb70b21')
+md5sums=('d2c1366be0756c24e1f5cfc02f80269f')
 
 prepare() {
     patch ${startdir}/src/owncloud/lib/private/request.php ${startdir}/allow-wildcard-trusted.patch
@@ -30,7 +30,7 @@ package() {
     
 # Code
     mkdir -p ${pkgdir}/usr/share/${pkgname}/bin
-    install -m755 ${startdir}/bin/{create-ocdata,fix-permissions,fix-restore,generate-autoconfig,web-install}.pl ${pkgdir}/usr/share/${pkgname}/bin/
+    install -m755 ${startdir}/bin/{create-ocdata,fix-permissions,fix-restore,generate-autoconfig,upgrade,web-install}.pl ${pkgdir}/usr/share/${pkgname}/bin/
 
     mkdir -p ${pkgdir}/usr/share/${pkgname}/tmpl
     install -m644 ${startdir}/tmpl/htaccess.tmpl ${pkgdir}/usr/share/${pkgname}/tmpl/

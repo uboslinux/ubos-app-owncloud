@@ -2,7 +2,7 @@
 #
 # Simple test for owncloud
 #
-# Copyright (C) 2012-2014 Indie Computing Corp.
+# Copyright (C) 2012-2015 Indie Computing Corp.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -108,7 +108,7 @@ my $TEST = new UBOS::WebAppTest(
 
                         $response = $c->getMustContain( '/', '<label for="user" class="infield">Username</label>', 200, 'Wrong (before log-on) front page' );
                         my $requestToken;
-                        if( $response->{content} =~ m!<input.*name="requesttoken" value="([^"]+)" />! ) {
+                        if( $response->{content} =~ m!requesttoken="([^"]+)"! ) {
                             $requestToken = $1;
 
                             my $adminData = $c->getTestPlan()->getAdminData();
@@ -146,7 +146,7 @@ my $TEST = new UBOS::WebAppTest(
                         my $response = $c->get( '/' );
 
                         my $requestToken;
-                        if( $response->{content} =~ m!<input.*name="requesttoken" value="([^"]+)" />! ) {
+                        if( $response->{content} =~ m!requesttoken="([^"]+)"! ) {
                             $requestToken = $1;
                         } else {
                             $c->error( 'Cannot find request token', $response->{content} );
@@ -164,7 +164,7 @@ my $TEST = new UBOS::WebAppTest(
                         $response = $c->get( $filesAppRelativeUrl );
 
                         my $dataRequestToken;
-                        if( $response->{content} =~ m!<head.*data-requesttoken="([0-9a-f]+)"! ) {
+                        if( $response->{content} =~ m!requesttoken="([^"]+)"! ) {
                             $dataRequestToken = $1;
                         } else {
                             $c->error( 'Cannot find request token', $response->{content} );
@@ -185,7 +185,7 @@ my $TEST = new UBOS::WebAppTest(
                         my $response = $c->get( '/' );
 
                         my $requestToken;
-                        if( $response->{content} =~ m!<input.*name="requesttoken" value="([^"]+)" />! ) {
+                        if( $response->{content} =~ m!requesttoken="([^"]+)"! ) {
                             $requestToken = $1;
                         } else {
                             $c->error( 'Cannot find request token', $response->{content} );
