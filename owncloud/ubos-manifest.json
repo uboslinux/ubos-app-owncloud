@@ -128,7 +128,7 @@
         "mysql" : {
             "appconfigitems" : [
                 {
-                    "type"       : "mysql-database",
+                    "type"       : "database",
                     "name"       : "maindb",
                     "retentionpolicy"  : "keep",
                     "retentionbucket"  : "maindb",
