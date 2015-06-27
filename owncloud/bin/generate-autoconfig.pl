@@ -10,7 +10,7 @@ use strict;
 use UBOS::Utils;
 use POSIX;
 
-if( 'install' eq $operation ) {
+if( 'deploy' eq $operation ) {
 
     my $dir            = $config->getResolve( 'appconfig.apache2.dir' );
     my $autoConfigFile = "$dir/config/autoconfig.php";

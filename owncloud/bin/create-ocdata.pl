@@ -12,10 +12,10 @@ use POSIX;
 
 my $ocData = $config->getResolve( 'appconfig.datadir' ) . '/data/.ocdata';
 
-if( 'install' eq $operation ) {
+if( 'deploy' eq $operation ) {
     UBOS::Utils::saveFile( $ocData, '' );
 }
-if( 'uninstall' eq $operation ) {
+if( 'undeploy' eq $operation ) {
     if( -e $ocData ) {
         UBOS::Utils::deleteFile( $ocData );
     }
