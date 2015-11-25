@@ -2,18 +2,18 @@ developer=http://owncloud.org/
 url=${developer}
 maintainer=http://indiecomputing.com/
 pkgname=$(basename $(pwd))
-pkgver=8.0.4
-pkgrel=2
+pkgver=8.2.1
+pkgrel=1
 pkgdesc="Your cloud, your data, your way!"
 arch=('any')
 license=("GPL")
 source=("http://download.owncloud.org/community/owncloud-${pkgver}.tar.bz2")
 # source=("http://download.owncloud.org/community/testing/owncloud-${pkgver}.tar.bz2")
 options=('!strip')
-sha512sums=('6ce8c86fe7a145ac8ca1e2316f50e8f719f154554a161942b999674f111dd5afb54f1a7065ce8f53e1d31a8d17cd571d285fbfd6e6eb939fde2f637328f420fa')
+sha512sums=('303e2e573809a8fa661f66fc2bab9c04bc8803f8ffffc1b2d5c4bce23ef067cf450db6c32cc012d3366fcd92ae92d0ceb5d9148bc90e87dae6d97ad84f4bd081')
 
 prepare() {
-    patch ${startdir}/src/owncloud/lib/private/request.php ${startdir}/allow-wildcard-trusted.patch
+    patch ${startdir}/src/owncloud/lib/private/appframework/http/request.php ${startdir}/allow-wildcard-trusted.patch
 }
 
 package() {
