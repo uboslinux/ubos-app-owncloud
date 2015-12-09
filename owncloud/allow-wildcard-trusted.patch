@@ -1,44 +1,49 @@
---- request.php	2015-02-04 23:35:57.000000000 +0000
-+++ request.new	2015-02-08 00:12:40.089512882 +0000
-@@ -110,9 +110,39 @@
- 			return true;
- 		}
- 
--		return in_array($domain, $trustedList);
--	}
-+		// Allow access from an explicitly listed domain
-+		if( in_array($domain, $trustedList)) {
-+			return true;
-+		}
- 
-+		// If a value contains a *, apply glob-style matching. Any second * is ignored.
-+		foreach ($trustedList as $trusted) {
-+			if($trusted == '*') {
-+				return true;
-+			}
-+			$star = strpos($trusted, '*');
-+			if($star === false) {
-+				next;
-+			}
-+			if($star === 0) {
-+				if(strrpos($domain, substr($trusted, 1)) !== FALSE) {
-+					return true;
-+				}
-+            } elseif($star === strlen($trusted)-1) {
-+				if(strpos($domain, substr($trusted, 0, strlen($trusted)-1 )) !== FALSE) {
-+					return true;
-+				}
-+			} else {
-+				if(strpos($domain, substr($trusted, 0, $star)) !== false
-+				&& strrpos($domain, substr($trusted, $star+1 ), -strlen($trusted-$star-1)) !== false )
-+				{
-+					return true;
-+				}
-+			}
-+		}
-+		return false;
-+	}
-+    
- 	/**
- 	 * Returns the unverified server host from the headers without checking
- 	 * whether it is a trusted domain
+*** trusteddomainhelper.php	2015-11-17 16:35:20.000000000 +0000
+--- trusteddomainhelper.patched.php	2015-12-09 20:13:58.988503745 +0000
+***************
+*** 83,89 ****
+  		if (preg_match(Request::REGEX_LOCALHOST, $domain) === 1) {
+  			return true;
+  		}
+- 		return in_array($domain, $trustedList);
+- 	}
+  
+  }
+--- 83,119 ----
+  		if (preg_match(Request::REGEX_LOCALHOST, $domain) === 1) {
+  			return true;
+  		}
+  
++ 		// Allow access from an explicitly listed domain
++ 		if( in_array($domain, $trustedList)) {
++ 			return true;
++ 		}
++  
++ 		// If a value contains a *, apply glob-style matching. Any second * is ignored.
++ 		foreach ($trustedList as $trusted) {
++ 			if($trusted == '*') {
++ 				return true;
++ 			}
++ 			$star = strpos($trusted, '*');
++ 			if($star === false) {
++ 				next;
++ 			}
++ 			if($star === 0) {
++ 				if(strrpos($domain, substr($trusted, 1)) !== FALSE) {
++ 					return true;
++ 				}
++             } elseif($star === strlen($trusted)-1) {
++ 				if(strpos($domain, substr($trusted, 0, strlen($trusted)-1 )) !== FALSE) {
++ 					return true;
++ 				}
++ 			} else {
++ 				if(strpos($domain, substr($trusted, 0, $star)) !== false
++ 				&& strrpos($domain, substr($trusted, $star+1 ), -strlen($trusted-$star-1)) !== false )
++ 				{
++ 					return true;
++ 				}
++ 			}
++ 		}
++ 		return false;
++ 	}
+  }

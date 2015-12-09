@@ -13,7 +13,7 @@ options=('!strip')
 sha512sums=('303e2e573809a8fa661f66fc2bab9c04bc8803f8ffffc1b2d5c4bce23ef067cf450db6c32cc012d3366fcd92ae92d0ceb5d9148bc90e87dae6d97ad84f4bd081')
 
 prepare() {
-    patch ${startdir}/src/owncloud/lib/private/appframework/http/request.php ${startdir}/allow-wildcard-trusted.patch
+    patch ${startdir}/src/owncloud/lib/private/security/trusteddomainhelper.php ${startdir}/allow-wildcard-trusted.patch
 }
 
 package() {
