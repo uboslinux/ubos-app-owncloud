@@ -8,11 +8,10 @@
                 "php",
                 "php-apache",
                 "php-gd",
-                "php-xcache",
                 "sudo"
             ],
             "apache2modules" : [
-                "php5",
+                "php7",
                 "rewrite",
                 "headers",
                 "env",
