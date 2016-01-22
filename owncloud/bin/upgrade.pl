@@ -13,6 +13,7 @@ use POSIX;
 my $dir         = $config->getResolve( 'appconfig.apache2.dir' );
 my $datadir     = $config->getResolve( 'appconfig.datadir' ) . '/data';
 my $apacheUname = $config->getResolve( 'apache2.uname' );
+my $ret         = 1;
 
 if( 'upgrade' eq $operation ) {
 
@@ -26,11 +27,25 @@ if( 'upgrade' eq $operation ) {
     my $out;
     my $err;
     if( UBOS::Utils::myexec( $cmd, undef, \$out, \$err )) {
-        unless( $out =~ m!already latest version! ) {
+        if( $out =~ m!already latest version! ) {
             # apparently a non-upgrade is an error, with the message on stdout
+            # no op
+        } elsif( $out =~ m!Updates between multiple major versions and downgrades are unsupported! ) {
+            error( <<MSG );
+Unfortunately, ownCloud cannot currently upgrade your installation. This is because you skipped at least
+one major ownCloud version since you last upgraded, and the ownCloud upgrader does not know how to handle
+this.
+We filed a bug with the ownCloud project here: https://github.com/owncloud/appstore-issues/issues/40
+In the meantime, you will have to do the upgrade work manually, unfortunately.
+MSG
+            $ret = 0;
+
+        } else {
+            # something else happened
             error( "occ upgrade failed:\n$out\n$err" );
+            $ret = 0;
         }
     }
 }
 
-1;
+$ret;
