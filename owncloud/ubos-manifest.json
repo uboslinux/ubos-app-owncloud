@@ -7,6 +7,7 @@
             "depends" : [
                 "php",
                 "php-apache",
+                "php-apcu",
                 "php-gd",
                 "sudo"
             ],
@@ -18,13 +19,11 @@
                 "setenvif"
             ],
             "phpmodules" : [
+                "apcu",
                 "gd",
                 "iconv",
-                "mysql",
                 "mysqli",
-                "openssl",
                 "pdo_mysql",
-                "xcache",
                 "zip"
             ],
             "appconfigitems" : [
