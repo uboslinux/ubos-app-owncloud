@@ -42,7 +42,7 @@ if( 'deploy' eq $operation ) {
   "adminpass"       => "$adminpass",
   "directory"       => "$datadir",
   "trusted_domains" => array( "$hostname" ),
-  "memcache.local'  => '\OC\Memcache\APCu'
+  "memcache.local"  => "\\OC\\Memcache\\APCu"
 );
 END
     
