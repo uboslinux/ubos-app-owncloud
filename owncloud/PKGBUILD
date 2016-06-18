@@ -2,15 +2,18 @@ developer=http://owncloud.org/
 url=${developer}
 maintainer=http://indiecomputing.com/
 pkgname=$(basename $(pwd))
-pkgver=8.2.2
-pkgrel=4
+pkgver=8.2.5
+pkgrel=1
 pkgdesc="Your cloud, your data, your way!"
 arch=('any')
 license=("GPL")
 source=("http://download.owncloud.org/community/owncloud-${pkgver}.tar.bz2")
 # source=("http://download.owncloud.org/community/testing/owncloud-${pkgver}.tar.bz2")
+depends=(
+    'php'
+    'smtp-server')
 options=('!strip')
-sha512sums=('3830e8311931da3cbb596e927afe638dee6a5d9fd47d623faf4dabbde96fe39ced1bf7006c1b9e39ff52e72e2b849fe9d1012c3b1a86ca9f8c873d820b944b78')
+sha512sums=('3623bbc49b30366275c293922cedddc304a8bbb1bd2403aa28b3979f68e7308841fcdc66c75abca4897174f804265e9a9f0db45286f2adacdd0b5dbf1b7efd85')
 
 prepare() {
     patch ${startdir}/src/owncloud/lib/private/security/trusteddomainhelper.php ${startdir}/allow-wildcard-trusted.patch

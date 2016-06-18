@@ -29,6 +29,8 @@ if( 'deploy' eq $operation ) {
 
     my $datadir = $config->getResolve( 'appconfig.datadir' ) . '/data';
 
+    my $cliUrl = $config->getResolve( 'site.protocol' ) .  '://' . $hostname . $config->getResolve( 'appconfig.context' );
+
     my $autoConfigContent = <<END;
 <?php
 \$AUTOCONFIG = array(
@@ -42,7 +44,15 @@ if( 'deploy' eq $operation ) {
   "adminpass"       => "$adminpass",
   "directory"       => "$datadir",
   "trusted_domains" => array( "$hostname" ),
-  "memcache.local"  => "\\OC\\Memcache\\APCu"
+  "memcache.local"  => "\\OC\\Memcache\\APCu",
+// Testing these
+  "appstoreenabled" => true,
+  "updatechecker"   => false,
+  "log_type"        => "errorlog",
+  "overwrite.cli.url" => "$cliUrl",
+  "mail_domain"       => "$hostname",
+  "mail_from_address" => "$adminlogin",
+  "mail_smtpmode"     => "smtp"
 );
 END
     

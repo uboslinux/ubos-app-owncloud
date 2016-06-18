@@ -5,7 +5,6 @@
         "apache2" : {
             "defaultcontext" : "/owncloud",
             "depends" : [
-                "php",
                 "php-apache",
                 "php-apcu",
                 "php-gd",
@@ -23,8 +22,7 @@
                 "gd",
                 "iconv",
                 "mysqli",
-                "pdo_mysql",
-                "zip"
+                "pdo_mysql"
             ],
             "appconfigitems" : [
                 {

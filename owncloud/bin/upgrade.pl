@@ -35,7 +35,7 @@ if( 'upgrade' eq $operation ) {
 Unfortunately, ownCloud cannot currently upgrade your installation. This is because you skipped at least
 one major ownCloud version since you last upgraded, and the ownCloud upgrader does not know how to handle
 this.
-We filed a bug with the ownCloud project here: https://github.com/owncloud/appstore-issues/issues/40
+We filed a bug with the ownCloud project here: https://github.com/owncloud/core/issues/21859
 In the meantime, you will have to do the upgrade work manually, unfortunately.
 MSG
             $ret = 0;
