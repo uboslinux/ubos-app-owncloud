@@ -59,7 +59,7 @@ sub upload {
 
     my $url = 'http://' . $c->hostname . $c->context() . $relativeUrl;
 
-    debug( 'Posting to url', $url );
+    trace( 'Posting to url', $url );
 
     my $cmd = $c->{curl};
     $cmd .= " -F 'files[]=\@$fullFile;filename=$file;type=text/plain'";
@@ -78,7 +78,7 @@ sub upload {
         'headers'     => $stderr,
         'url'         => $url,
         'file'        => $file };
-        
+
     $c->mustStatus( $response, 200, 'Upload failed' );
 
     return $response;
@@ -97,7 +97,7 @@ my $TEST = new UBOS::WebAppTest(
                     name  => 'virgin',
                     check => sub {
                         my $c = shift;
-                        
+
                         # Accessing the front page for the first time will cause a redirect to /index.php/post-setup-check,
                         # which will redirect back to the front if everything is okay. When accessed the second time, however,
                         # the redirect may not occur.
@@ -112,7 +112,7 @@ my $TEST = new UBOS::WebAppTest(
                             $requestToken = $1;
 
                             my $adminData = $c->getTestPlan()->getAdminData();
-                            
+
                             my $postData = {
                                 'user'            => $adminData->{userid},
                                 'password'        => $adminData->{credential},
@@ -122,7 +122,7 @@ my $TEST = new UBOS::WebAppTest(
 
                             $response = $c->post( '/', $postData );
                             $c->mustRedirect( $response, $filesAppRelativeUrl, 302, 'Not redirected to files app' );
-                            
+
                             $c->getMustContain( $filesAppRelativeUrl, '<span id="expandDisplayName">' . $adminData->{userid} . '</span>', 200, 'Wrong (logged-on) front page (display name)' );
                             $c->getMustContain( $filesAppRelativeUrl, '/index.php/settings/admin', 200, 'Wrong (logged-on) front page (admin)' );
 
@@ -160,7 +160,7 @@ my $TEST = new UBOS::WebAppTest(
                             'requesttoken'    => $requestToken
                         };
                         $c->post( '/', $postData );
-                        
+
                         $response = $c->get( $filesAppRelativeUrl );
 
                         my $dataRequestToken;
