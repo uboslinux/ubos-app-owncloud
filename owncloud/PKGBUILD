@@ -9,6 +9,7 @@ arch=('any')
 license=("GPL")
 source=("http://download.owncloud.org/community/owncloud-${pkgver}.tar.bz2")
 # source=("http://download.owncloud.org/community/testing/owncloud-${pkgver}.tar.bz2")
+releasepage=('https://owncloud.org/install/#edition')
 depends=(
     'php'
     'smtp-server')
